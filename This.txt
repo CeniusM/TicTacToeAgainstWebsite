@@ -1,0 +1,5 @@
+have this site on the left side https://playtictactoe.org/
+and have cmd on the right side
+
+press enter to start the game
+and the program will ask you to start a new game by pressing enter
