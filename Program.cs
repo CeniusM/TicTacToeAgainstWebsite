@@ -3,7 +3,7 @@ using Point = System.Drawing.Point;
 using Rectangle = System.Drawing.Rectangle;
 using System.Diagnostics;
 using System.Collections.Generic;
-
+Test.Program.Test();
 // the places to look for white color if the peice is set
 // XCoords[piece][0(x), 1(y)]
 int[,] XCoords = {
@@ -97,26 +97,21 @@ int AIMoveRandom(int[] board, int playerTurn) // returns index
             return move;
     }
 }
-int AIMove(int[] board, int playerTurn) // returns index
+// later for improvment, pass a value struct where the value of a move is also based of
+// how many chances there are of winning with a line
+// and add in some randomizeing
+
+static int AIMove(int[] board, int playerTurn) // returns index
 {
-    float[] movesRating = new float[9];
-    List<int> moves = new List<int>();
-    for (int i = 0; i < 9; i++)
-        if (board[i] == 0)
-            moves.Add(i);
-
-    int move = 0;
-    for (int i = 0; i < moves.Count; i++)
-    {
-        move = moves[i];
-        board[move] = playerTurn;
-        movesRating[move] = MoveRating(playerTurn ^ 3);
-        board[move] = 0;
-    }
-
     float MoveRating(int turn)
     {
-        float[] movesRating = new float[9];
+        float[] currentMovesRating = new float[9];
+        if (playerTurn == 1)
+            for (int i = 0; i < 9; i++)
+                currentMovesRating[i] = float.MinValue;
+        else
+            for (int i = 0; i < 9; i++)
+                currentMovesRating[i] = float.MaxValue;
         List<int> moves = new List<int>();
         for (int i = 0; i < 9; i++)
             if (board[i] == 0)
@@ -124,24 +119,41 @@ int AIMove(int[] board, int playerTurn) // returns index
         if (moves.Count == 0)
             return 0;
 
+        float val = 0;
         for (int i = 0; i < moves.Count; i++)
         {
-            float val = 0;
+            val = 0;
             board[moves[i]] = turn;
 
             if (GameOverCheck())
-                val = (turn == 1 ? float.MinValue : float.MaxValue);
+                val = (turn == 1 ? float.MaxValue : float.MinValue);
             else
             {
                 val = MoveRating(turn ^ 3);
             }
 
             board[moves[i]] = 0;
-            movesRating[moves[i]] = val;
+            currentMovesRating[moves[i]] = val;
         }
 
-        // no moves
-        return 0;
+        val = (turn == 1 ? float.MinValue : float.MaxValue);
+        if (turn == 1)
+        {
+            for (int i = 0; i < moves.Count; i++)
+                if (currentMovesRating[moves[i]] > val)
+                {
+                    val = currentMovesRating[moves[i]];
+                }
+        }
+        else if (turn == 2)
+        {
+            for (int i = 0; i < moves.Count; i++)
+                if (currentMovesRating[moves[i]] < val)
+                {
+                    val = currentMovesRating[moves[i]];
+                }
+        }
+        return val;
     }
     bool GameOverCheck()
     {
@@ -166,7 +178,37 @@ int AIMove(int[] board, int playerTurn) // returns index
         return false;
     }
 
-    // gets the heights value if 1, the lowest if 0
+
+    // Console.Clear();
+    // for (int i = 0; i < 9; i++)
+    //     Console.Write(board[i]);
+    // Console.WriteLine();
+
+    float[] movesRating = new float[9];
+    List<int> moves = new List<int>();
+    for (int i = 0; i < 9; i++)
+        if (board[i] == 0)
+            moves.Add(i);
+
+    int move = 0;
+    for (int i = 0; i < moves.Count; i++)
+    {
+        move = moves[i];
+        board[move] = playerTurn;
+        if (GameOverCheck())
+            movesRating[move] = (playerTurn == 1 ? float.MaxValue : float.MinValue);
+        else
+            movesRating[move] = MoveRating(playerTurn ^ 3);
+        board[move] = 0;
+    }
+
+    // for (int i = 0; i < moves.Count; i++)
+    //     Console.WriteLine("Move: " + moves[i] + " Rating: " + movesRating[moves[i]]);
+    // for (int i = 0; i < 9; i++)
+    //     Console.Write(board[i]);
+    // Console.WriteLine();
+
+    // gets the heights value if 1, the lowest if 2
     move = -1;
     if (playerTurn == 1)
     {
@@ -188,6 +230,30 @@ int AIMove(int[] board, int playerTurn) // returns index
                 val = movesRating[moves[i]];
             }
     }
+
+    // if (move == -1)
+    // {
+    //     for (int i = 0; i < 3; i++)
+    //     {
+    //         for (int j = 0; j < 3; j++)
+    //         {
+    //             if (board[j + (i * 3)] == 1)
+    //                 Console.Write("[X]");
+    //             else if (board[j + (i * 3)] == 2)
+    //                 Console.Write("[O]");
+    //             else
+    //                 Console.Write("[ ]");
+    //         }
+    //         Console.WriteLine();
+    //     }
+
+    //     for (int i = 0; i < moves.Count; i++)
+    //         Console.WriteLine("Move: " + moves[i] + " Rating: " + movesRating[i]);
+
+    //     Console.ReadLine();
+    // }
+    // for (int i = 0; i < moves.Count; i++)
+    //     Console.WriteLine("Move: " + moves[i] + " Rating: " + movesRating[i]);
     return move;
 }
 void PrintCurentMousePos()
@@ -223,9 +289,11 @@ while (true)
     if (timeSpent > TimeBetweenMove)
     {
         int move = AIMove(board, 1);
-        ClickPiece(move);
+        if (move != -1)
+            ClickPiece(move);
 
         timeSpent = 0;
+        // Console.ReadLine();
     }
 
     UpdateScreen();
@@ -236,7 +304,7 @@ while (true)
         Console.WriteLine("GAME OVER");
         Console.WriteLine("Press enter to play again");
         HELP.helper.LeftMouseClick(1000, 500); // click on cmd
-        Console.ReadLine();
+        // Console.ReadLine();
         HELP.helper.LeftMouseClick(294 + 100, 236 + 100);
         Console.Clear();
         timeSpent = 0;
