@@ -70,9 +70,18 @@ void PrintBoard(int[] board)
         Console.WriteLine();
     }
 }
+void MemoryClick(int x, int y)
+{
+    Point pos = HELP.helper.GetCursorPosition();
+    HELP.helper.LeftMouseClick(x, y);
+    HELP.helper.SetCursorPos(pos.X, pos.Y);
+    // HELP.helper.mouse_event(HELP.helper.MOUSEEVENTF_LEFTDOWN, x, y, 0, 0);
+    // HELP.helper.mouse_event(HELP.helper.MOUSEEVENTF_LEFTUP, x, y, 0, 0);
+}
 void ClickPiece(int index)
 {
-    HELP.helper.LeftMouseClick(XCoords[index, 0] + 200, XCoords[index, 1] + 140);
+    // HELP.helper.LeftMouseClick(XCoords[index, 0] + 200, XCoords[index, 1] + 140);
+    MemoryClick(XCoords[index, 0] + 200, XCoords[index, 1] + 140);
 
     int x = Console.GetCursorPosition().Left, y = Console.GetCursorPosition().Top;
     Console.SetCursorPosition(0, 10);
@@ -303,9 +312,10 @@ while (true)
     {
         Console.WriteLine("GAME OVER");
         Console.WriteLine("Press enter to play again");
-        HELP.helper.LeftMouseClick(1000, 500); // click on cmd
+        // HELP.helper.LeftMouseClick(1000, 500); // click on cmd
         // Console.ReadLine();
-        HELP.helper.LeftMouseClick(294 + 100, 236 + 100);
+        // HELP.helper.LeftMouseClick(294 + 100, 236 + 100); // click on game
+        MemoryClick(294 + 100, 236 + 100);
         Console.Clear();
         timeSpent = 0;
         board = new int[9];

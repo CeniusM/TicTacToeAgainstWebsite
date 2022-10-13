@@ -6,7 +6,7 @@ class helper
 {
     //This is a replacement for Cursor.Position in WinForms
     [System.Runtime.InteropServices.DllImport("user32.dll")]
-    static extern bool SetCursorPos(int x, int y);
+    public static extern bool SetCursorPos(int x, int y);
 
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     public static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);

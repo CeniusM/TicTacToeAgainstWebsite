@@ -171,17 +171,22 @@ class Program
         //     0,2,0,
         //     2,0,0
         // };
-        int[] test = new int[9];
+        int[] test = {
+            1,0,0,
+            0,0,2,
+            0,0,0
+        };
+        // int[] test = new int[9];
 
         int move = AIMove(test, 1);
-        const int Samples = 100;
-        Stopwatch sw = new Stopwatch();
-        sw.Start();
-        for (int i = 0; i < Samples; i++)
-        {
-            move = AIMove(test, 1);
-        }
-        Console.WriteLine(sw.ElapsedMilliseconds / Samples + "ms AVG");
+        // const int Samples = 100;
+        // Stopwatch sw = new Stopwatch();
+        // sw.Start();
+        // for (int i = 0; i < Samples; i++)
+        // {
+        //     move = AIMove(test, 1);
+        // }
+        // Console.WriteLine(sw.ElapsedMilliseconds / Samples + "ms AVG");
 
         Console.WriteLine("Move: " + move);
         Console.ReadLine();
